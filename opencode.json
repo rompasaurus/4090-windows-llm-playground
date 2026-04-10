@@ -3,7 +3,7 @@
     "ollama": {
       "id": "ollama",
       "name": "Ollama (Local 4090)",
-      "baseURL": "http://localhost:11434/v1",
+      "baseUrl": "http://localhost:11434/v1",
       "models": {
         "gemma4:26b": {
           "name": "Gemma 4 26B-A4B",
