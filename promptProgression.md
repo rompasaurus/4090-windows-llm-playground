@@ -6,7 +6,7 @@ Chronological record of every AI-assisted prompt used to build this project.
 
 ## Prompt #1
 - **Date/Time:** 2026-04-10
-- **Prompt:** "ok I want to create a new project folder and init i new repo on my rompasaurus labeled 4090 windows llm playground"
+- **Prompt:** "ok I want to create a new project folder and init a new repo on my rompasaurus labeled 4090 windows llm playground"
 - **Input Tokens (est):** ~30
 - **Output Tokens (est):** ~200
 - **Commit:** `18fc33c` — Initial commit
@@ -17,7 +17,7 @@ Chronological record of every AI-assisted prompt used to build this project.
 
 ## Prompt #2
 - **Date/Time:** 2026-04-10
-- **Prompt:** "ok lets setup the readme with the project intent also create a promptProgression.md file to keep track of every prompt i input into this project directory"
+- **Prompt:** "ok let's setup the readme with the project intent also create a promptProgression.md file to keep track of every prompt I input into this project directory"
 - **Input Tokens (est):** ~350
 - **Output Tokens (est):** ~1,200
 - **Commit:** *(pending)*
@@ -29,7 +29,7 @@ Chronological record of every AI-assisted prompt used to build this project.
 
 ## Prompt #3
 - **Date/Time:** 2026-04-10
-- **Prompt:** "ok I want to setup gemm4 on this windows machine and access it via a nice cli interface similar to claude code ensure tool calling and development works as close as possible to claude cli"
+- **Prompt:** "ok I want to setup Gemma 4 on this windows machine and access it via a nice CLI interface similar to Claude Code ensure tool calling and development works as close as possible to Claude CLI"
 - **Input Tokens (est):** ~40
 - **Output Tokens (est):** ~300
 - **Commit:** *(none — research phase)*
@@ -40,7 +40,7 @@ Chronological record of every AI-assisted prompt used to build this project.
 
 ## Prompt #4
 - **Date/Time:** 2026-04-10
-- **Prompt:** "I want to run the gemma 4 model locally on this computer with my 4090 gpu"
+- **Prompt:** "I want to run the Gemma 4 model locally on this computer with my 4090 GPU"
 - **Input Tokens (est):** ~20
 - **Output Tokens (est):** ~4,000
 - **Commit:** *(none — research phase)*
@@ -73,7 +73,7 @@ Chronological record of every AI-assisted prompt used to build this project.
 
 ## Prompt #7
 - **Date/Time:** 2026-04-10
-- **Prompt:** "let go for the recommended model also create a research.md file to note the conclusions and research already performed in this chat and keep a nice org document on what was investigated as part of this process continue to update the promptprogress each time I make a prompt also lets then look at the best way to mimic a claude like experience with this gemma model and run it locally"
+- **Prompt:** "let's go for the recommended model also create a research.md file to note the conclusions and research already performed in this chat and keep a nice org document on what was investigated as part of this process continue to update the promptProgression each time I make a prompt also let's then look at the best way to mimic a Claude-like experience with this Gemma model and run it locally"
 - **Input Tokens (est):** ~80
 - **Output Tokens (est):** ~8,000
 - **Commit:** *(pending)*
@@ -102,7 +102,7 @@ Chronological record of every AI-assisted prompt used to build this project.
 
 ## Prompt #9
 - **Date/Time:** 2026-04-10
-- **Prompt:** "I also need a guide on how to setup up remote access to this llm via tailscale and a connected linux cachy os machine"
+- **Prompt:** "I also need a guide on how to set up remote access to this LLM via Tailscale and a connected Linux CachyOS machine"
 - **Input Tokens (est):** ~25
 - **Output Tokens (est):** ~3,000
 - **Commit:** *(pending)*
@@ -139,11 +139,48 @@ Chronological record of every AI-assisted prompt used to build this project.
 
 ## Prompt #12
 - **Date/Time:** 2026-04-10
-- **Prompt:** "divide describe and commit dont forget to update the promptsprogression"
+- **Prompt:** "divide describe and commit don't forget to update the promptProgression"
 - **Input Tokens (est):** ~15
 - **Output Tokens (est):** ~2,000
 - **Commit:** *(see commits below — changes split into logical groups)*
 - **Files Created/Modified:**
   - `promptProgression.md` (modified — added prompt #12, updated pending commit hashes)
+
+---
+
+## Prompt #13
+- **Date/Time:** 2026-04-10
+- **Prompt:** *(OpenCode launched with config error: `Unrecognized key: "baseURL" provider.ollama`)*
+- **Input Tokens (est):** ~20
+- **Output Tokens (est):** ~500
+- **Commit:** `b49b66b` — Fix baseURL key casing in opencode.json config
+- **Notes:** Initial fix attempt changed `baseURL` to `baseUrl` — still invalid. The actual issue was a wrong config schema: `baseURL` belongs inside an `options` object, and the provider requires `"npm": "@ai-sdk/openai-compatible"`. Root cause was that the original config was written based on outdated/incorrect examples.
+- **Files Created/Modified:**
+  - `opencode.json` (modified — restructured to correct OpenCode provider schema)
+
+---
+
+## Prompt #14
+- **Date/Time:** 2026-04-10
+- **Prompt:** "update the documentation and guide as well so this doesn't happen in the future"
+- **Input Tokens (est):** ~15
+- **Output Tokens (est):** ~2,000
+- **Commit:** *(see prompt #15)*
+- **Files Created/Modified:**
+  - `REMOTE_ACCESS.md` (modified — updated both OpenCode config examples to correct schema with `$schema`, `npm`, and `options.baseURL` structure)
+
+---
+
+## Prompt #15
+- **Date/Time:** 2026-04-10
+- **Prompt:** "ok opencode opens but it's not connecting to the Ollama model it defaulted to Big Pickle hosted by OpenCode... wait I had to select the right model via Ctrl+P, we're good. Also update prompts file, divide describe and commit these changes, also you can fix any grammar or spelling issues in the prompt progression if there are any"
+- **Input Tokens (est):** ~50
+- **Output Tokens (est):** ~3,000
+- **Commit:** *(pending)*
+- **Notes:** OpenCode was working correctly — just needed to select the Ollama model via Ctrl+P instead of the default hosted model.
+- **Files Created/Modified:**
+  - `promptProgression.md` (modified — added prompts #13–#15, fixed grammar/spelling across all entries)
+  - `REMOTE_ACCESS.md` (modified — already updated in prompt #14)
+  - `opencode.json` (modified — added `$schema` field)
 
 ---
