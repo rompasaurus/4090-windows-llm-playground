@@ -58,27 +58,27 @@
     "playwright": {
       "type": "local",
       "command": ["npx", "-y", "@playwright/mcp@latest"],
-      "enabled": false
+      "enabled": true
     },
     "tavily": {
       "type": "remote",
       "url": "https://mcp.tavily.com/mcp/?tavilyApiKey={env:TAVILY_API_KEY}",
-      "enabled": false
+      "enabled": true
     },
     "eslint": {
       "type": "local",
       "command": ["npx", "@eslint/mcp@latest"],
-      "enabled": false
+      "enabled": true
     },
     "semgrep": {
       "type": "local",
-      "command": ["/home/rompasaurus/.local/bin/uvx", "semgrep", "--config=auto", "mcp"],
-      "enabled": false
+      "command": ["/home/rompasaurus/.local/bin/uvx", "semgrep-mcp"],
+      "enabled": true
     },
     "filesystem": {
       "type": "local",
       "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "/home/rompasaurus/COdingProjects"],
-      "enabled": false
+      "enabled": true
     },
     "github": {
       "type": "local",
@@ -90,7 +90,7 @@
       "environment": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_TOKEN}"
       },
-      "enabled": false
+      "enabled": true
     }
   }
 }
