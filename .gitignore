@@ -1,0 +1,14 @@
+# Environment files with potential secrets
+.env.remote
+
+# Aider
+.aider*
+!.aider.model.settings.yml
+
+# Crush state
+.crush/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
