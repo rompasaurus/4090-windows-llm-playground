@@ -184,3 +184,59 @@ Chronological record of every AI-assisted prompt used to build this project.
   - `opencode.json` (modified — added `$schema` field)
 
 ---
+
+## Prompt #16
+- **Date/Time:** 2026-04-10
+- **Prompt:** "I can connect via OpenCode on my Linux machine — Cannot connect to API: Unable to connect. Is the computer able to access the url... [retrying in 12s attempt #10]"
+- **Input Tokens (est):** ~30
+- **Output Tokens (est):** ~2,000
+- **Commit:** *(see prompt #18)*
+- **Notes:** Diagnosed remote connection failure. Three issues found: (1) `OLLAMA_HOST` was not set — Ollama was bound to `127.0.0.1` instead of `0.0.0.0`, (2) no Windows Firewall rule for port 11434, (3) Tailscale IP in configs was wrong (`100.85.32.17` vs actual `100.84.60.92`).
+- **Files Created/Modified:**
+  - `opencode.json` (modified — updated baseURL to correct Tailscale IP)
+
+---
+
+## Prompt #17
+- **Date/Time:** 2026-04-10
+- **Prompt:** "is Ollama set to allow remote connections? ... setx OLLAMA_HOST 0.0.0.0"
+- **Input Tokens (est):** ~30
+- **Output Tokens (est):** ~200
+- **Commit:** *(none — confirmed Ollama was still bound to localhost)*
+- **Notes:** `netstat` confirmed `127.0.0.1:11434`. User had not yet run the `setx` command.
+
+---
+
+## Prompt #18
+- **Date/Time:** 2026-04-10
+- **Prompt:** "ok did that, is OpenCode set to the right endpoint from the remote computer?"
+- **Input Tokens (est):** ~15
+- **Output Tokens (est):** ~100
+- **Commit:** `6562bad` — Update OpenCode baseURL to correct Tailscale IP
+- **Files Created/Modified:**
+  - `opencode.json` (modified — changed baseURL from `100.106.112.113` to `100.84.60.92`)
+
+---
+
+## Prompt #19
+- **Date/Time:** 2026-04-10
+- **Prompt:** "restarted, same issue"
+- **Input Tokens (est):** ~5
+- **Output Tokens (est):** ~500
+- **Notes:** `OLLAMA_HOST` still not set — `setx` had silently failed. Used `[System.Environment]::SetEnvironmentVariable()` PowerShell method instead, which worked. After Ollama restart, `netstat` confirmed `0.0.0.0:11434` and established connections from the Linux machine were visible.
+- **Files Created/Modified:**
+  - *(none — env var set via PowerShell, Ollama restarted)*
+
+---
+
+## Prompt #20
+- **Date/Time:** 2026-04-10
+- **Prompt:** "update the documentation with what was done and also the prompts, divide describe and commit"
+- **Input Tokens (est):** ~15
+- **Output Tokens (est):** ~4,000
+- **Commit:** *(pending)*
+- **Files Created/Modified:**
+  - `REMOTE_ACCESS.md` (modified — added firewall setup step, PowerShell env var alternative, improved troubleshooting with step-by-step diagnostics, updated Tailscale IP from `100.85.32.17` to `100.84.60.92`)
+  - `promptProgression.md` (modified — added prompts #16–#20)
+
+---
