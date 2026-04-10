@@ -108,6 +108,30 @@ def get_tailscale_ip():
         return None
 
 
+def is_linux():
+    """Check if running on Linux."""
+    return sys.platform.startswith("linux")
+
+
+def get_uvx_path():
+    """Find uvx executable, checking common install locations."""
+    if cmd_exists("uvx"):
+        return "uvx"
+    # Check common install location
+    candidate = Path.home() / ".local" / "bin" / "uvx"
+    if candidate.exists():
+        return str(candidate)
+    return None
+
+
+def get_shell_profile():
+    """Get the user's shell profile file path."""
+    shell = os.environ.get("SHELL", "")
+    if "zsh" in shell:
+        return Path.home() / ".zshrc"
+    return Path.home() / ".bashrc"
+
+
 # ─── Install Steps ──────────────────────────────────────────────────────────
 
 def install_ollama():
@@ -160,6 +184,44 @@ def configure_ollama_env(tailscale_ip=None):
         log_info("No Tailscale detected — Ollama will only listen on localhost")
 
 
+def install_uv():
+    log_step("uv / uvx (Python MCP Server Runner)")
+
+    uvx = get_uvx_path()
+    if uvx:
+        log_ok(f"uvx already installed: {uvx}")
+        return uvx
+
+    log_info("Installing uv via official installer...")
+    if is_linux():
+        run("curl -LsSf https://astral.sh/uv/install.sh | sh", check=False)
+    else:
+        run("powershell -ExecutionPolicy Bypass -c \"irm https://astral.sh/uv/install.ps1 | iex\"", check=False)
+
+    uvx = get_uvx_path()
+    if uvx:
+        log_ok(f"uvx installed: {uvx}")
+
+        # Ensure ~/.local/bin is on PATH in shell profile
+        if is_linux():
+            profile = get_shell_profile()
+            path_line = 'export PATH="$HOME/.local/bin:$PATH"'
+            try:
+                content = profile.read_text() if profile.exists() else ""
+                if ".local/bin" not in content:
+                    with open(profile, "a") as f:
+                        f.write(f"\n# Added by setup.py — uv/uvx\n{path_line}\n")
+                    log_ok(f"Added ~/.local/bin to PATH in {profile}")
+                else:
+                    log_ok(f"~/.local/bin already in {profile}")
+            except OSError:
+                log_warn(f"Could not update {profile}. Add manually: {path_line}")
+    else:
+        log_err("uvx installation failed. Install manually: https://docs.astral.sh/uv/getting-started/installation/")
+
+    return uvx
+
+
 def install_opencode():
     log_step("OpenCode (Claude Code-like TUI + MCP)")
 
@@ -183,6 +245,9 @@ def configure_opencode(project_dir, tailscale_ip=None):
     base_url = f"http://{tailscale_ip}:11434/v1" if tailscale_ip else "http://localhost:11434/v1"
     name = f"Ollama (Remote 4090 via Tailscale @ {tailscale_ip})" if tailscale_ip else "Ollama (Local 4090)"
 
+    # Use absolute path for uvx to avoid PATH issues with OpenCode's spawned processes
+    uvx = get_uvx_path() or "uvx"
+
     config = {
         "$schema": "https://opencode.ai/config.json",
         "provider": {
@@ -205,12 +270,12 @@ def configure_opencode(project_dir, tailscale_ip=None):
         "mcp": {
             "ddg-search": {
                 "type": "local",
-                "command": ["uvx", "duckduckgo-mcp-server"],
+                "command": [uvx, "duckduckgo-mcp-server"],
                 "enabled": True,
             },
             "fetch": {
                 "type": "local",
-                "command": ["uvx", "mcp-server-fetch"],
+                "command": [uvx, "mcp-server-fetch"],
                 "enabled": True,
             },
             "memory": {
@@ -230,7 +295,7 @@ def configure_opencode(project_dir, tailscale_ip=None):
             },
             "git": {
                 "type": "local",
-                "command": ["uvx", "mcp-server-git"],
+                "command": [uvx, "mcp-server-git"],
                 "enabled": True,
             },
             "playwright": {
@@ -250,7 +315,7 @@ def configure_opencode(project_dir, tailscale_ip=None):
             },
             "semgrep": {
                 "type": "local",
-                "command": ["uvx", "semgrep", "--config=auto", "mcp"],
+                "command": [uvx, "semgrep-mcp"],
                 "enabled": False,
             },
             "filesystem": {
@@ -277,8 +342,66 @@ def configure_opencode(project_dir, tailscale_ip=None):
     config_path.write_text(json.dumps(config, indent=2) + "\n")
     log_ok(f"OpenCode config written to {config_path}")
     log_info("6 MCP servers enabled (search, fetch, memory, thinking, context7, git)")
-    log_info("6 MCP servers available but disabled (playwright, tavily, eslint, semgrep, filesystem, github)")
+    log_info("6 MCP servers disabled (playwright, tavily, eslint, semgrep, filesystem, github)")
     log_info("See OPENCODE_EXPANSION.md for details on each server")
+
+
+def configure_opencode_env(project_dir):
+    log_step("OpenCode Environment File")
+
+    env_path = project_dir / ".env.opencode"
+    if env_path.exists():
+        log_ok(f".env.opencode already exists at {env_path}")
+        log_info("Edit it to add your API keys for Tavily, GitHub, Exa, Firecrawl")
+        return
+
+    env_content = """# =============================================================================
+# OpenCode MCP Environment Variables
+# =============================================================================
+# Source this file in your shell profile:
+#   echo 'source {project_dir}/.env.opencode' >> ~/.zshrc
+#
+# Or export them manually before running opencode.
+# =============================================================================
+
+# -- Tavily (AI-optimized search) --
+# Free tier: 1,000 searches/month
+# Sign up: https://app.tavily.com
+export TAVILY_API_KEY=""
+
+# -- GitHub (for GitHub MCP server) --
+# Create a token: https://github.com/settings/tokens
+# Scopes needed: repo, read:org, read:user
+export GITHUB_TOKEN=""
+
+# -- Exa (neural search, optional) --
+# Free tier: 1,000 requests/month
+# Sign up: https://dashboard.exa.ai
+export EXA_API_KEY=""
+
+# -- Firecrawl (advanced scraping, optional) --
+# Free tier available
+# Sign up: https://www.firecrawl.dev/app/api-keys
+export FIRECRAWL_API_KEY=""
+""".replace("{project_dir}", str(project_dir))
+
+    env_path.write_text(env_content)
+    log_ok(f"OpenCode env template written to {env_path}")
+    log_warn("Edit .env.opencode to add your API keys, then source it in your shell profile")
+
+    # Add source line to shell profile
+    profile = get_shell_profile()
+    source_line = f'source "{project_dir}/.env.opencode"'
+    try:
+        content = profile.read_text() if profile.exists() else ""
+        if ".env.opencode" not in content:
+            with open(profile, "a") as f:
+                f.write(f"\n# OpenCode MCP API keys\n{source_line}\n")
+            log_ok(f"Added source line to {profile}")
+        else:
+            log_ok(f".env.opencode already sourced in {profile}")
+    except OSError:
+        log_warn(f"Could not update {profile}. Add manually: {source_line}")
 
 
 def install_crush():
@@ -494,6 +617,12 @@ def main():
         else:
             log_err("Ollama not found")
 
+        uvx = get_uvx_path()
+        if uvx:
+            log_ok(f"uvx: {uvx}")
+        else:
+            log_warn("uvx: not found (needed for MCP servers)")
+
         if cmd_exists("opencode"):
             log_ok("OpenCode: installed")
         else:
@@ -509,6 +638,17 @@ def main():
         else:
             log_warn("Aider: not found")
 
+        if cmd_exists("docker"):
+            log_ok("Docker: installed")
+        else:
+            log_warn("Docker: not found (needed for GitHub MCP server)")
+
+        env_path = project_dir / ".env.opencode"
+        if env_path.exists():
+            log_ok(".env.opencode: exists")
+        else:
+            log_warn(".env.opencode: not found (API keys for MCP servers)")
+
         print_summary(tailscale_ip)
         return
 
@@ -520,10 +660,14 @@ def main():
 
     configure_ollama_env(tailscale_ip)
 
+    # ── Install uv/uvx (needed by MCP servers) ──
+    install_uv()
+
     # ── Install CLI tools ──
     if not args.skip_opencode:
         install_opencode()
         configure_opencode(project_dir, tailscale_ip)
+        configure_opencode_env(project_dir)
 
     if not args.skip_crush:
         install_crush()
