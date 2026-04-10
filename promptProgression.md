@@ -240,3 +240,27 @@ Chronological record of every AI-assisted prompt used to build this project.
   - `promptProgression.md` (modified — added prompts #16–#20)
 
 ---
+
+## Prompt #21
+- **Date/Time:** 2026-04-10
+- **Prompt:** "ok Gemma 4 seems a bit limited I would like it to be able to research online on its own and deep dive into topics like Claude, is this possible?"
+- **Input Tokens (est):** ~30
+- **Output Tokens (est):** ~500
+- **Commit:** *(none — discussion)*
+- **Notes:** Confirmed that MCP servers can give Gemma 4 web search, scraping, and research capabilities via OpenCode's MCP support. Identified free options (DuckDuckGo, open-webSearch) and paid with free tiers (Tavily, Exa).
+
+---
+
+## Prompt #22
+- **Date/Time:** 2026-04-10
+- **Prompt:** "ok let's deep dive into expanding the OpenCode capabilities to match Claude CLI as closely as possible and allow for deep research and web scraping and planning and processing, make a new md doc and research this in depth, compose a good list of research and guide and provide a TOC and walkthrough for this"
+- **Input Tokens (est):** ~60
+- **Output Tokens (est):** ~25,000
+- **Commit:** *(pending)*
+- **Notes:** Three parallel research agents investigated: (1) OpenCode MCP ecosystem and config schema, (2) complete Claude Code feature inventory (34 tools, 26 hooks, 60+ slash commands), (3) best MCP servers of 2026 across 9 categories. Results synthesized into a comprehensive guide.
+- **Files Created/Modified:**
+  - `OPENCODE_EXPANSION.md` (created — comprehensive guide: feature gap analysis, MCP server configs for web search/scraping/research/memory/git/databases/linting/docs, Gemma 4 limitations, recommended setups, installation walkthrough, troubleshooting)
+  - `README.md` (modified — added OPENCODE_EXPANSION.md to project files index)
+  - `promptProgression.md` (modified — added prompts #21–#22)
+
+---

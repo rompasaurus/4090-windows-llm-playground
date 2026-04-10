@@ -68,6 +68,7 @@ curl http://localhost:11434/v1/chat/completions \
 | [`research.md`](research.md) | Investigation notes, model comparisons, decisions |
 | [`promptProgression.md`](promptProgression.md) | Log of every AI-assisted prompt in this project |
 | [`REMOTE_ACCESS.md`](REMOTE_ACCESS.md) | Tailscale remote access documentation |
+| [`OPENCODE_EXPANSION.md`](OPENCODE_EXPANSION.md) | Guide to expanding OpenCode with MCP servers |
 | [`opencode.json`](opencode.json) | OpenCode TUI configuration |
 | [`.crush.json`](.crush.json) | Crush TUI configuration |
 | [`.env`](.env) | Aider environment configuration |
