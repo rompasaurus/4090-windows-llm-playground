@@ -3,7 +3,7 @@
   "provider": {
     "ollama": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "Ollama (Local 4090)",
+      "name": "Ollama (Remote 4090)",
       "options": {
         "baseURL": "http://100.84.60.92:11434/v1"
       },
@@ -15,6 +15,82 @@
           "maxTokens": 8192
         }
       }
+    }
+  },
+  "mcp": {
+    "ddg-search": {
+      "type": "local",
+      "command": ["/home/rompasaurus/.local/bin/uvx", "duckduckgo-mcp-server"],
+      "environment": {
+        "DDG_SAFE_SEARCH": "moderate",
+        "DDG_REGION": "us-en"
+      },
+      "enabled": true
+    },
+    "fetch": {
+      "type": "local",
+      "command": ["/home/rompasaurus/.local/bin/uvx", "mcp-server-fetch"],
+      "enabled": true
+    },
+    "memory": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-memory"],
+      "environment": {
+        "MEMORY_FILE_PATH": "/home/rompasaurus/.opencode/memory.jsonl"
+      },
+      "enabled": true
+    },
+    "thinking": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "enabled": true
+    },
+    "context7": {
+      "type": "local",
+      "command": ["npx", "-y", "@upstash/context7-mcp@latest"],
+      "enabled": true
+    },
+    "git": {
+      "type": "local",
+      "command": ["/home/rompasaurus/.local/bin/uvx", "mcp-server-git"],
+      "enabled": true
+    },
+    "playwright": {
+      "type": "local",
+      "command": ["npx", "-y", "@playwright/mcp@latest"],
+      "enabled": false
+    },
+    "tavily": {
+      "type": "remote",
+      "url": "https://mcp.tavily.com/mcp/?tavilyApiKey={env:TAVILY_API_KEY}",
+      "enabled": false
+    },
+    "eslint": {
+      "type": "local",
+      "command": ["npx", "@eslint/mcp@latest"],
+      "enabled": false
+    },
+    "semgrep": {
+      "type": "local",
+      "command": ["/home/rompasaurus/.local/bin/uvx", "semgrep", "--config=auto", "mcp"],
+      "enabled": false
+    },
+    "filesystem": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "/home/rompasaurus/COdingProjects"],
+      "enabled": false
+    },
+    "github": {
+      "type": "local",
+      "command": [
+        "docker", "run", "--rm", "-i",
+        "-e", "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "environment": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_TOKEN}"
+      },
+      "enabled": false
     }
   }
 }
