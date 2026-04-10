@@ -303,3 +303,39 @@ Chronological record of every AI-assisted prompt used to build this project.
   - `opencode.json` (modified — already updated in prompts #23–#24)
 
 ---
+
+## Prompt #26
+- **Date/Time:** 2026-04-10
+- **Prompt:** *(MCP server status showing github and semgrep errors: "MCP error -32000: Connection closed")*
+- **Input Tokens (est):** ~30
+- **Output Tokens (est):** ~1,000
+- **Commit:** *(see prompt #28)*
+- **Notes:** Two issues found: (1) semgrep command was wrong (`uvx semgrep --config=auto mcp` should be `uvx semgrep-mcp`), (2) GitHub MCP server needs `GITHUB_TOKEN` env var exported but it was only stored in `gh auth`. Fixed semgrep command in opencode.json. Pointed to `.env.opencode` for the GitHub token.
+- **Files Created/Modified:**
+  - `opencode.json` (modified — fixed semgrep command to `semgrep-mcp`, aligned `GITHUB_TOKEN` env var name)
+
+---
+
+## Prompt #27
+- **Date/Time:** 2026-04-10
+- **Prompt:** "it's in this env file" *(referring to .env.opencode containing API keys)*
+- **Input Tokens (est):** ~10
+- **Output Tokens (est):** ~200
+- **Commit:** *(see prompt #28)*
+- **Notes:** Confirmed `.env.opencode` contains `GITHUB_TOKEN`, `TAVILY_API_KEY`, `EXA_API_KEY`, and `FIRECRAWL_API_KEY`. Env vars weren't loaded because the file hadn't been sourced. Advised adding `source .env.opencode` to `~/.zshrc`.
+
+---
+
+## Prompt #28
+- **Date/Time:** 2026-04-10
+- **Prompt:** "ok update the setup script to do everything you did if needed for future install and such, update the prompts and divide describe and commit"
+- **Input Tokens (est):** ~30
+- **Output Tokens (est):** ~5,000
+- **Commit:** *(pending)*
+- **Notes:** Major setup.py overhaul incorporating all lessons learned from MCP debugging: uv/uvx auto-installation, absolute path detection, shell profile updates, env file template generation, correct semgrep-mcp package, and cross-platform (Linux/Windows) support.
+- **Files Created/Modified:**
+  - `setup.py` (modified — added `install_uv()`, `configure_opencode_env()`, `get_uvx_path()`, `get_shell_profile()`, `is_linux()` helpers; updated `configure_opencode()` to use absolute uvx paths and correct `semgrep-mcp` package; added Docker and env file checks to verify mode)
+  - `opencode.json` (modified — fixed semgrep command, aligned GITHUB_TOKEN env var)
+  - `promptProgression.md` (modified — added prompts #26–#28)
+
+---
