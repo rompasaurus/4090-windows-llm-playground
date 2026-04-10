@@ -103,11 +103,14 @@ Create `opencode.json` in your project directory:
 
 ```json
 {
+  "$schema": "https://opencode.ai/config.json",
   "provider": {
     "ollama": {
-      "id": "ollama",
+      "npm": "@ai-sdk/openai-compatible",
       "name": "Ollama (Remote 4090)",
-      "baseURL": "http://100.85.32.17:11434/v1",
+      "options": {
+        "baseURL": "http://100.85.32.17:11434/v1"
+      },
       "models": {
         "gemma4:26b": {
           "name": "Gemma 4 26B-A4B",
@@ -333,11 +336,14 @@ Create `opencode.json` in your project:
 
 ```json
 {
+  "$schema": "https://opencode.ai/config.json",
   "provider": {
     "ollama": {
-      "id": "ollama",
+      "npm": "@ai-sdk/openai-compatible",
       "name": "Ollama (Remote 4090 via Tailscale)",
-      "baseURL": "http://100.85.32.17:11434/v1",
+      "options": {
+        "baseURL": "http://100.85.32.17:11434/v1"
+      },
       "models": {
         "gemma4:26b": {
           "name": "Gemma 4 26B-A4B",
