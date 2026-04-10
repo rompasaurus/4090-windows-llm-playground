@@ -5,7 +5,7 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "Ollama (Local 4090)",
       "options": {
-        "baseURL": "http://100.106.112.113:11434/v1"
+        "baseURL": "http://100.84.60.92:11434/v1"
       },
       "models": {
         "gemma4:26b": {
