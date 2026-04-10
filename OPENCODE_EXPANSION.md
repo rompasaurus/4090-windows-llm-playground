@@ -915,15 +915,21 @@ ollama --version
 winget upgrade Ollama.Ollama
 ```
 
-#### Step 2: Install Python MCP dependencies
+#### Step 2: Install uv/uvx (Python MCP server runner)
 
 ```bash
-# Install uv (Python package manager, used by uvx)
-pip install uv
+# Install uv (recommended method)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# This installs to ~/.local/bin/ — add to PATH if not already:
+export PATH="$HOME/.local/bin:$PATH"
+# Add the line above to ~/.bashrc or ~/.zshrc for persistence
 
 # Verify uvx works
 uvx --version
 ```
+
+> **Important:** If `uvx` is not on your system PATH, OpenCode won't find it. Either add `~/.local/bin` to your PATH or use absolute paths in `opencode.json` (e.g., `"/home/youruser/.local/bin/uvx"` instead of `"uvx"`).
 
 #### Step 3: Test MCP servers individually
 
@@ -982,6 +988,22 @@ If any tool fails, check:
 ---
 
 ## 15. Troubleshooting
+
+### "Executable not found in $PATH: uvx"
+
+OpenCode can't find `uvx` because `~/.local/bin` isn't in the PATH that OpenCode inherits. Two fixes:
+
+**Option A — Add to PATH (recommended):**
+```bash
+# Add to ~/.bashrc or ~/.zshrc
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+**Option B — Use absolute paths in opencode.json:**
+```json
+"command": ["/home/youruser/.local/bin/uvx", "duckduckgo-mcp-server"]
+```
 
 ### MCP server won't start
 

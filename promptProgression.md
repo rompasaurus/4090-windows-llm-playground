@@ -264,3 +264,42 @@ Chronological record of every AI-assisted prompt used to build this project.
   - `promptProgression.md` (modified — added prompts #21–#22)
 
 ---
+
+## Prompt #23
+- **Date/Time:** 2026-04-10
+- **Prompt:** *(OpenCode config validation errors: "Invalid input" on 6 MCP servers due to `_comment` fields in opencode.json)*
+- **Input Tokens (est):** ~20
+- **Output Tokens (est):** ~300
+- **Commit:** *(see prompt #25)*
+- **Notes:** JSON doesn't support comments. OpenCode's schema rejects unrecognized keys like `_comment`. Removed all comment fields from MCP server configs.
+- **Files Created/Modified:**
+  - `opencode.json` (modified — removed `_comment` fields from all MCP server entries)
+
+---
+
+## Prompt #24
+- **Date/Time:** 2026-04-10
+- **Prompt:** "update the setup script too"
+- **Input Tokens (est):** ~10
+- **Output Tokens (est):** ~3,000
+- **Commit:** *(see prompt #25)*
+- **Notes:** Also discovered `uvx` was not installed. Installed via `curl -LsSf https://astral.sh/uv/install.sh | sh` to `~/.local/bin/`. Updated opencode.json to use absolute paths for `uvx` since `~/.local/bin` wasn't on OpenCode's PATH. All 6 enabled MCP servers connected successfully after fix.
+- **Files Created/Modified:**
+  - `setup.py` (modified — added OpenCode install/configure functions, `--skip-opencode` flag, MCP server config generation, updated banner/summary)
+  - `opencode.json` (modified — changed `uvx` to absolute path `/home/rompasaurus/.local/bin/uvx`)
+
+---
+
+## Prompt #25
+- **Date/Time:** 2026-04-10
+- **Prompt:** "yes update the docs and divide describe and push also update the prompts as well"
+- **Input Tokens (est):** ~20
+- **Output Tokens (est):** ~2,000
+- **Commit:** *(pending)*
+- **Files Created/Modified:**
+  - `OPENCODE_EXPANSION.md` (modified — added uvx PATH troubleshooting section, updated install instructions with curl method)
+  - `promptProgression.md` (modified — added prompts #23–#25)
+  - `setup.py` (modified — already updated in prompt #24)
+  - `opencode.json` (modified — already updated in prompts #23–#24)
+
+---
