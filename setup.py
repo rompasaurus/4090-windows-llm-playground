@@ -5,6 +5,7 @@
 Installs and configures:
   - Ollama (local LLM runtime)
   - Gemma 4 26B-A4B model (Q4_K_M quantization)
+  - OpenCode (Claude Code-like TUI with MCP server support)
   - Crush (Claude Code-like TUI for local models)
   - Aider (AI pair programming CLI)
   - Tailscale network exposure for remote access
@@ -157,6 +158,127 @@ def configure_ollama_env(tailscale_ip=None):
         log_warn("Restart Ollama after setting OLLAMA_HOST for it to take effect")
     else:
         log_info("No Tailscale detected — Ollama will only listen on localhost")
+
+
+def install_opencode():
+    log_step("OpenCode (Claude Code-like TUI + MCP)")
+
+    if cmd_exists("opencode"):
+        log_ok("OpenCode already installed")
+        return
+
+    if cmd_exists("npm"):
+        log_info("Installing OpenCode via npm...")
+        run("npm install -g opencode-ai@latest", check=False)
+    else:
+        log_warn("npm not found. Install Node.js first, then: npm install -g opencode-ai@latest")
+        return
+
+    log_ok("OpenCode installed")
+
+
+def configure_opencode(project_dir, tailscale_ip=None):
+    log_step("OpenCode Configuration")
+
+    base_url = f"http://{tailscale_ip}:11434/v1" if tailscale_ip else "http://localhost:11434/v1"
+    name = f"Ollama (Remote 4090 via Tailscale @ {tailscale_ip})" if tailscale_ip else "Ollama (Local 4090)"
+
+    config = {
+        "$schema": "https://opencode.ai/config.json",
+        "provider": {
+            "ollama": {
+                "npm": "@ai-sdk/openai-compatible",
+                "name": name,
+                "options": {
+                    "baseURL": base_url,
+                },
+                "models": {
+                    "gemma4:26b": {
+                        "name": "Gemma 4 26B-A4B",
+                        "id": "gemma4:26b",
+                        "contextWindow": 32768,
+                        "maxTokens": 8192,
+                    }
+                },
+            }
+        },
+        "mcp": {
+            "ddg-search": {
+                "type": "local",
+                "command": ["uvx", "duckduckgo-mcp-server"],
+                "enabled": True,
+            },
+            "fetch": {
+                "type": "local",
+                "command": ["uvx", "mcp-server-fetch"],
+                "enabled": True,
+            },
+            "memory": {
+                "type": "local",
+                "command": ["npx", "-y", "@modelcontextprotocol/server-memory"],
+                "enabled": True,
+            },
+            "thinking": {
+                "type": "local",
+                "command": ["npx", "-y", "@modelcontextprotocol/server-sequential-thinking"],
+                "enabled": True,
+            },
+            "context7": {
+                "type": "local",
+                "command": ["npx", "-y", "@upstash/context7-mcp@latest"],
+                "enabled": True,
+            },
+            "git": {
+                "type": "local",
+                "command": ["uvx", "mcp-server-git"],
+                "enabled": True,
+            },
+            "playwright": {
+                "type": "local",
+                "command": ["npx", "-y", "@playwright/mcp@latest"],
+                "enabled": False,
+            },
+            "tavily": {
+                "type": "remote",
+                "url": "https://mcp.tavily.com/mcp/?tavilyApiKey={env:TAVILY_API_KEY}",
+                "enabled": False,
+            },
+            "eslint": {
+                "type": "local",
+                "command": ["npx", "@eslint/mcp@latest"],
+                "enabled": False,
+            },
+            "semgrep": {
+                "type": "local",
+                "command": ["uvx", "semgrep", "--config=auto", "mcp"],
+                "enabled": False,
+            },
+            "filesystem": {
+                "type": "local",
+                "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", str(project_dir)],
+                "enabled": False,
+            },
+            "github": {
+                "type": "local",
+                "command": [
+                    "docker", "run", "--rm", "-i",
+                    "-e", "GITHUB_PERSONAL_ACCESS_TOKEN",
+                    "ghcr.io/github/github-mcp-server",
+                ],
+                "environment": {
+                    "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_TOKEN}",
+                },
+                "enabled": False,
+            },
+        },
+    }
+
+    config_path = project_dir / "opencode.json"
+    config_path.write_text(json.dumps(config, indent=2) + "\n")
+    log_ok(f"OpenCode config written to {config_path}")
+    log_info("6 MCP servers enabled (search, fetch, memory, thinking, context7, git)")
+    log_info("6 MCP servers available but disabled (playwright, tavily, eslint, semgrep, filesystem, github)")
+    log_info("See OPENCODE_EXPANSION.md for details on each server")
 
 
 def install_crush():
@@ -313,6 +435,7 @@ def print_summary(tailscale_ip=None):
     print(f"""
   {BOLD}Local usage:{RESET}
 
+    {CYAN}opencode{RESET}                               Launch OpenCode TUI (Claude Code-like + MCP)
     {CYAN}crush{RESET}                                  Launch Crush TUI (Claude Code-like)
     {CYAN}aider{RESET}                                  Launch Aider pair programming
     {CYAN}aider --model ollama_chat/gemma4:26b{RESET}   Aider with explicit model
@@ -335,7 +458,8 @@ def print_summary(tailscale_ip=None):
 """)
 
     print(f"""
-  {BOLD}Docs:{RESET}  See {CYAN}REMOTE_ACCESS.md{RESET} for detailed Tailscale setup instructions
+  {BOLD}Docs:{RESET}  See {CYAN}REMOTE_ACCESS.md{RESET} for Tailscale setup
+        See {CYAN}OPENCODE_EXPANSION.md{RESET} for MCP server guide
 """)
 
 
@@ -347,6 +471,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("--skip-model", action="store_true", help="Skip pulling the Gemma 4 model (if already downloaded)")
+    parser.add_argument("--skip-opencode", action="store_true", help="Skip OpenCode installation")
     parser.add_argument("--skip-crush", action="store_true", help="Skip Crush installation")
     parser.add_argument("--skip-aider", action="store_true", help="Skip Aider installation")
     parser.add_argument("--model", default="gemma4:26b", help="Ollama model to pull (default: gemma4:26b)")
@@ -368,6 +493,11 @@ def main():
             run(f'"{ollama}" list', check=False)
         else:
             log_err("Ollama not found")
+
+        if cmd_exists("opencode"):
+            log_ok("OpenCode: installed")
+        else:
+            log_warn("OpenCode: not found")
 
         if cmd_exists("crush"):
             log_ok("Crush: installed")
@@ -391,6 +521,10 @@ def main():
     configure_ollama_env(tailscale_ip)
 
     # ── Install CLI tools ──
+    if not args.skip_opencode:
+        install_opencode()
+        configure_opencode(project_dir, tailscale_ip)
+
     if not args.skip_crush:
         install_crush()
         configure_crush(project_dir, tailscale_ip)
