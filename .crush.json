@@ -1,0 +1,18 @@
+{
+  "$schema": "https://charm.land/crush.json",
+  "providers": {
+    "ollama-local": {
+      "name": "Ollama (Local 4090)",
+      "base_url": "http://localhost:11434/v1/",
+      "type": "openai-compat",
+      "models": [
+        {
+          "name": "Gemma 4 26B-A4B",
+          "id": "gemma4:26b",
+          "context_window": 32768,
+          "default_max_tokens": 8192
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,5 @@
+- name: ollama_chat/gemma4:26b
+  extra_params:
+    num_ctx: 32768
+  edit_format: diff
+  use_repo_map: true
