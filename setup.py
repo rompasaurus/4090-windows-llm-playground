@@ -318,6 +318,14 @@ def configure_opencode(project_dir, tailscale_ip=None):
                 "command": [uvx, "semgrep-mcp"],
                 "enabled": False,
             },
+            "brave-search": {
+                "type": "local",
+                "command": ["npx", "-y", "@modelcontextprotocol/server-brave-search"],
+                "environment": {
+                    "BRAVE_API_KEY": "{env:BRAVE_API_KEY}",
+                },
+                "enabled": False,
+            },
             "filesystem": {
                 "type": "local",
                 "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", str(project_dir)],
@@ -342,7 +350,7 @@ def configure_opencode(project_dir, tailscale_ip=None):
     config_path.write_text(json.dumps(config, indent=2) + "\n")
     log_ok(f"OpenCode config written to {config_path}")
     log_info("6 MCP servers enabled (search, fetch, memory, thinking, context7, git)")
-    log_info("6 MCP servers disabled (playwright, tavily, eslint, semgrep, filesystem, github)")
+    log_info("7 MCP servers disabled (playwright, tavily, eslint, semgrep, brave-search, filesystem, github)")
     log_info("See OPENCODE_EXPANSION.md for details on each server")
 
 
@@ -383,6 +391,11 @@ export EXA_API_KEY=""
 # Free tier available
 # Sign up: https://www.firecrawl.dev/app/api-keys
 export FIRECRAWL_API_KEY=""
+
+# -- Brave Search (web search, optional) --
+# Metered billing: $5/month in credits (~1,000 queries)
+# Sign up: https://brave.com/search/api/
+export BRAVE_API_KEY=""
 """.replace("{project_dir}", str(project_dir))
 
     env_path.write_text(env_content)
