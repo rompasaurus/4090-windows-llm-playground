@@ -89,4 +89,4 @@ echo -e "${GREEN}${BOLD} Remote: ${OLLAMA_URL}${RESET}"
 echo -e "${GREEN}${BOLD}=========================================${RESET}"
 echo ""
 
-claude --model "${MODEL}"
+exec claude --model "${MODEL}"
