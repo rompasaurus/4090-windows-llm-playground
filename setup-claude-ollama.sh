@@ -7,10 +7,11 @@
 
 set -euo pipefail
 
-REMOTE_IP="100.106.112.113"
+# WSL2 gateway IP reaches the Windows host where Ollama runs
+REMOTE_IP=$(ip route show default | awk '{print $3}')
 OLLAMA_PORT="11434"
 OLLAMA_URL="http://${REMOTE_IP}:${OLLAMA_PORT}"
-MODEL="gemma4"
+MODEL="gemma4:26b"
 
 # ─── ANSI Colours ───────────────────────────────────────────────────
 RESET="\033[0m"

@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(ollama list:*)",
-      "Bash(system_profiler SPHardwareDataType:*)"
+      "Bash(system_profiler SPHardwareDataType:*)",
+      "WebSearch"
     ]
   }
 }
