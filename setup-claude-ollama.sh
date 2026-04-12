@@ -2,7 +2,7 @@
 # ─────────────────────────────────────────────────────────────────────
 # setup-claude-ollama.sh
 # Connect Claude Code CLI to a remote Ollama instance running Gemma 4
-# Remote host: 100.106.112.113 (Tailscale)
+# Remote host: 100.84.60.92 (Tailscale - dooktv-1)
 # ─────────────────────────────────────────────────────────────────────
 
 set -euo pipefail
@@ -15,7 +15,7 @@ MODEL="gemma4:26b"
 WSL_GW="$(ip route show default 2>/dev/null | awk '{print $3}')"
 
 REMOTE_IP=""
-for candidate in "localhost" "$WSL_GW" "100.106.112.113"; do
+for candidate in "localhost" "$WSL_GW" "100.84.60.92"; do
     [[ -z "$candidate" ]] && continue
     if curl -sf --connect-timeout 2 "http://${candidate}:${OLLAMA_PORT}/api/version" &>/dev/null; then
         REMOTE_IP="$candidate"
@@ -24,7 +24,7 @@ for candidate in "localhost" "$WSL_GW" "100.106.112.113"; do
 done
 if [[ -z "$REMOTE_IP" ]]; then
     echo -e "\033[91m\033[1m[FAIL]\033[0m  Could not find Ollama on any known host."
-    echo -e "  Tried: localhost, ${WSL_GW:-<no gateway>}, 100.106.112.113"
+    echo -e "  Tried: localhost, ${WSL_GW:-<no gateway>}, 100.84.60.92"
     echo -e "  Make sure Ollama is running and bound to 0.0.0.0"
     exit 1
 fi
