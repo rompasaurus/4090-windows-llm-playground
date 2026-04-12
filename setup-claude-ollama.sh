@@ -7,13 +7,15 @@
 
 set -euo pipefail
 
-# Auto-detect the Windows host IP from WSL2
-# Try candidates in order: WSL gateway, then Tailscale IP
+# Auto-detect Ollama host
+# Try: localhost, WSL2 gateway (if in WSL), Tailscale IP
 OLLAMA_PORT="11434"
 MODEL="gemma4:26b"
 
+WSL_GW="$(ip route show default 2>/dev/null | awk '{print $3}')"
+
 REMOTE_IP=""
-for candidate in "$(ip route show default 2>/dev/null | awk '{print $3}')" "100.106.112.113"; do
+for candidate in "localhost" "$WSL_GW" "100.106.112.113"; do
     [[ -z "$candidate" ]] && continue
     if curl -sf --connect-timeout 2 "http://${candidate}:${OLLAMA_PORT}/api/version" &>/dev/null; then
         REMOTE_IP="$candidate"
@@ -21,7 +23,9 @@ for candidate in "$(ip route show default 2>/dev/null | awk '{print $3}')" "100.
     fi
 done
 if [[ -z "$REMOTE_IP" ]]; then
-    echo -e "\033[91m\033[1m[FAIL]\033[0m  Could not find Ollama on any known host IP"
+    echo -e "\033[91m\033[1m[FAIL]\033[0m  Could not find Ollama on any known host."
+    echo -e "  Tried: localhost, ${WSL_GW:-<no gateway>}, 100.106.112.113"
+    echo -e "  Make sure Ollama is running and bound to 0.0.0.0"
     exit 1
 fi
 OLLAMA_URL="http://${REMOTE_IP}:${OLLAMA_PORT}"
