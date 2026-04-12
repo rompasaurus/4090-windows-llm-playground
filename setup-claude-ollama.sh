@@ -12,22 +12,14 @@ set -euo pipefail
 OLLAMA_PORT="11434"
 MODEL="gemma4:26b"
 
-detect_host() {
-    local candidates=(
-        "$(ip route show default 2>/dev/null | awk '{print $3}')"
-        "100.106.112.113"
-    )
-    for ip in "${candidates[@]}"; do
-        [[ -z "$ip" ]] && continue
-        if curl -sf --connect-timeout 2 "http://${ip}:${OLLAMA_PORT}/api/version" &>/dev/null; then
-            echo "$ip"
-            return 0
-        fi
-    done
-    return 1
-}
-
-REMOTE_IP=$(detect_host) || true
+REMOTE_IP=""
+for candidate in "$(ip route show default 2>/dev/null | awk '{print $3}')" "100.106.112.113"; do
+    [[ -z "$candidate" ]] && continue
+    if curl -sf --connect-timeout 2 "http://${candidate}:${OLLAMA_PORT}/api/version" &>/dev/null; then
+        REMOTE_IP="$candidate"
+        break
+    fi
+done
 if [[ -z "$REMOTE_IP" ]]; then
     echo -e "\033[91m\033[1m[FAIL]\033[0m  Could not find Ollama on any known host IP"
     exit 1
